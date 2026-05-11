@@ -5,8 +5,8 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "AdwaitaMono Nerd Font Mono:pixelsize=15:antialias=true:autohint=true";
-static int borderpx = 2;
+static char *font = "JetBrainsMono Nerd Font:pixelsize=14:antialias=true:autohint=true";
+static int borderpx = 0;
 
 /*
  * What program is execed by st depends of these precedence rules:
@@ -16,7 +16,7 @@ static int borderpx = 2;
  * 4: value of shell in /etc/passwd
  * 5: value of shell in config.h
  */
-static char *shell = "/bin/zsh";
+static char *shell = "/bin/sh";
 char *utmp = NULL;
 /* scroll program: to enable use a string like "scroll" */
 char *scroll = NULL;
@@ -65,7 +65,7 @@ static unsigned int blinktimeout = 800;
 /*
  * thickness of underline and bar cursors
  */
-static unsigned int cursorthickness = 1;
+static unsigned int cursorthickness = 2;
 
 /*
  * bell volume. It must be a value between -100 and 100. Use 0 for disabling
@@ -94,10 +94,10 @@ char *termname = "st-256color";
 unsigned int tabspaces = 8;
 
 /* bg opacity */
-float alpha = 1;
+float alpha = 0.75;
 
 /* Background opacity */
-float alpha_def = 1;
+float alpha_def;
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
@@ -125,8 +125,8 @@ static const char *colorname[] = {
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#000000", /* default foreground colour */
-  "#000000",    /* default background colour */
+	"#d8dee9", /* default foreground colour */
+	"#2e3440", /* default background colour */
 };
 
 
@@ -180,9 +180,14 @@ static uint forcemousemod = ShiftMask;
  * Beware that overloading Button1 will disable the selection.
  */
 static MouseShortcut mshortcuts[] = {
-    { XK_NO_MOD,    Button4, kscrollup,   {.i = 1} },
-    { XK_NO_MOD,    Button5, kscrolldown, {.i = 1} },
-    { XK_ANY_MOD,   Button2, selpaste,    {.i = 0}, 1 },
+	/* mask                 button   function        argument       release */
+	{ XK_NO_MOD,            Button4, kscrollup,      {.i = 1} },
+	{ XK_NO_MOD,            Button5, kscrolldown,    {.i = 1} },
+	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
+	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
+	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
+	{ ShiftMask,            Button5, ttysend,        {.s = "\033[6;2~"} },
+	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
 };
 
 /* Internal keyboard shortcuts. */
@@ -190,12 +195,24 @@ static MouseShortcut mshortcuts[] = {
 #define TERMMOD (Mod1Mask|ShiftMask)
 
 static Shortcut shortcuts[] = {
-    /* mask                 keysym          function        argument */
-    { MODKEY,               XK_c,           clipcopy,       {.i =  0} },  // Super+c copy
-    { MODKEY,               XK_v,           clippaste,      {.i =  0} },  // Super+v paste
-    { MODKEY,               XK_plus,       zoom,           {.f = +1} },  // Super++ zoom in
-    { MODKEY,               XK_minus,       zoom,           {.f = -1} },  // Super+- zoom out
-    { MODKEY,               XK_0,           zoomreset,      {.f =  0} },  // Super+0 zoom reset
+	/* mask                 keysym          function        argument */
+	{ XK_ANY_MOD,           XK_Break,       sendbreak,      {.i =  0} },
+	{ ControlMask,          XK_Print,       toggleprinter,  {.i =  0} },
+	{ ShiftMask,            XK_Print,       printscreen,    {.i =  0} },
+	{ XK_ANY_MOD,           XK_Print,       printsel,       {.i =  0} },
+	{ TERMMOD,              XK_K,           zoom,           {.f = +1} },
+	{ TERMMOD,              XK_J,           zoom,           {.f = -1} },
+	{ TERMMOD,              XK_Home,        zoomreset,      {.f =  0} },
+	{ MODKEY,               XK_c,           clipcopy,       {.i =  0} },
+	{ MODKEY,               XK_v,           clippaste,      {.i =  0} },
+	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
+	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
+	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
+	{ MODKEY,               XK_k,           kscrollup,      {.i =  1} },
+	{ MODKEY,               XK_j,           kscrolldown,    {.i =  1} },
+	{ MODKEY,               XK_a,           chgalpha,       {.f = -1} },
+	{ MODKEY,               XK_s,           chgalpha,       {.f = +1} },
+	{ MODKEY,               XK_d,           chgalpha,       {.f =  0} },
 };
 
 /*
