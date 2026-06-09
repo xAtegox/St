@@ -191,11 +191,21 @@ static MouseShortcut mshortcuts[] = {
 
 static Shortcut shortcuts[] = {
     /* mask                 keysym          function        argument */
-    { MODKEY,               XK_c,           clipcopy,       {.i =  0} },  // Super+c copy
-    { MODKEY,               XK_v,           clippaste,      {.i =  0} },  // Super+v paste
-    { MODKEY,               XK_plus,       zoom,           {.f = +1} },  // Super++ zoom in
-    { MODKEY,               XK_minus,       zoom,           {.f = -1} },  // Super+- zoom out
-    { MODKEY,               XK_0,           zoomreset,      {.f =  0} },  // Super+0 zoom reset
+
+    /* COPY / PASTE / CUT */
+    { ControlMask,          XK_c,           clipcopy,       {.i =  0} },  // Ctrl+C copy
+    { ControlMask,          XK_v,           clippaste,      {.i =  0} },  // Ctrl+V paste
+    { ControlMask,          XK_y,           clippaste,      {.i =  0} },  // Ctrl+Y (cut-style paste behavior)
+
+    /* ZOOM */
+    { MODKEY,               XK_plus,        zoom,           {.f = +1} },
+    { MODKEY,               XK_minus,       zoom,           {.f = -1} },
+    { MODKEY,               XK_0,           zoomreset,      {.f =  0} },
+
+    { ShiftMask,             XK_Up,          kscrollup,      {.i = 1} },
+    { ShiftMask,             XK_Down,        kscrolldown,    {.i = 1} },
+    { ShiftMask,             XK_Page_Up,     kscrollup,      {.i = 10} },
+    { ShiftMask,             XK_Page_Down,   kscrolldown,    {.i = 10} },
 };
 
 /*
